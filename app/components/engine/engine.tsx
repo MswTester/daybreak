@@ -5,7 +5,7 @@ interface EngineState {
     timeline: number;
     events: Event[];
     charts: number[][];
-    judged: Record<string, number>[];
+    judged: number[];
 }
 
 const Engine = () => {
@@ -13,7 +13,7 @@ const Engine = () => {
         timeline: 0,
         events: [] as Event[],
         charts: [[], [], [], []] as number[][],
-        judged: [] as Record<string, number>[],
+        judged: [] as number[],
     });
     
     useEffect(() => {
