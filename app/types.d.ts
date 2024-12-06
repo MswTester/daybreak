@@ -93,12 +93,12 @@ interface LevelDisplay{
 }
 
 interface Level extends LevelDisplay{
+    backgroundColor: number; // background color of the level
     notelines: [Noteline, Noteline, Noteline, Noteline]; // notes in the level
     judgement: Judgement; // judgement in the level
     sprites: Sprite[]; // sprites in the level
     texts: Text[]; // texts in the level
     camera: Object; // camera in the level
-    backgroundColor: number; // background color of the level
 }
 
 interface Event{

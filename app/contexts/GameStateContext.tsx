@@ -43,7 +43,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
 export const useGameState = () => {
   const context = useContext(GameStateContext);
   if (!context) {
-    throw new Error('useScreen must be used within a ScreenProvider');
+    throw new Error('useGameState must be used within a GameStateProvider');
   }
   return context;
 };

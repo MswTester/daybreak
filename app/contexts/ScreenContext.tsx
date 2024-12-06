@@ -15,13 +15,15 @@ export const ScreenProvider = ({ children }: { children: ReactNode }) => {
   const [height, setHeight] = useState<number>(0);
 
   useEffect(() => {
-    const resize = () => {
-      setWidth(window.innerWidth);
-      setHeight(window.innerHeight);
-    };
-    window.addEventListener('resize', resize);
-    resize();
-    return () => window.removeEventListener('resize', resize);
+    if(window){
+      const resize = () => {
+        setWidth(window.innerWidth);
+        setHeight(window.innerHeight);
+      };
+      window.addEventListener('resize', resize);
+      resize();
+      return () => window.removeEventListener('resize', resize);
+    }
   }, []);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export const ScreenProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useScreenSize = () => {
+export const useScreen = () => {
   const context = useContext(ScreenContext);
   if (!context) {
     throw new Error('useScreen must be used within a ScreenProvider');

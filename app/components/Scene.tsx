@@ -14,14 +14,21 @@ const Scene = ({ children, width, height, background }:SceneProps) => {
     const appRef = useRef<PIXI.Application | null>(null);
 
     useEffect(() => {
-        if (divRef.current) {
-            const app = new PIXI.Application({
-                width, height,
-                backgroundColor: background
-            });
-            divRef.current.appendChild(app.canvas);
-            appRef.current = app;
-        }
+        const app = new PIXI.Application();
+        app.init({
+            width, height,
+            backgroundColor: background
+        })
+        .then(value => {
+            if (divRef.current) {
+                console.log(app)
+                divRef.current.appendChild(app.canvas);
+                appRef.current = app;
+                return () => {
+                    divRef.current?.removeChild(app.canvas)
+                }
+            }
+        })
     }, []);
 
     useEffect(() => {

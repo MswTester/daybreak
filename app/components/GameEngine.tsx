@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { GameStateProvider, useGameState } from "~/contexts/GameStateContext";
-import { ScreenProvider, useScreenSize } from "~/contexts/ScreenContext";
+import { ScreenProvider, useScreen } from "~/contexts/ScreenContext";
 import { ObjectState, Transform } from "~/utils/modules";
 import Scene from "./Scene";
+import Camera from "./Camera";
+import Sprite from "./Sprite";
 
 interface GameEngineProps {
   timeline: number;
   level: Level;
   autoplay?: boolean;
-  endCallback: (
+  endCallback?: (
     score:number,
     maxCombo:number,
     accuracy:number,
@@ -23,7 +25,7 @@ interface GameEngineProps {
 
 const GameEngine = ({ timeline, level, autoplay = false, endCallback }:GameEngineProps) => {
   const {gameState, setGameState} = useGameState();
-  const { screenSize, width, height } = useScreenSize();
+  const { screenSize, width, height } = useScreen();
 
   useEffect(() => {
     // level initialization
@@ -74,13 +76,11 @@ const GameEngine = ({ timeline, level, autoplay = false, endCallback }:GameEngin
   }, [timeline]);
 
   return (
-    <GameStateProvider>
-      <ScreenProvider>
-        <Scene background={gameState.backgroundColor} width={width} height={height}>
-          <h1></h1>
-        </Scene>
-      </ScreenProvider>
-    </GameStateProvider>
+    <Scene background={gameState.backgroundColor} width={width} height={height}>
+      <Camera>
+        <Sprite transform={new Transform()} filters={[]} texture="" />
+      </Camera>
+    </Scene>
   );
 }
 
