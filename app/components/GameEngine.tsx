@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+// app/components/GameEngine.tsx
+
+import { useEffect } from "react";
 import { useGameState } from "~/contexts/GameStateContext";
 import { useScreen } from "~/contexts/ScreenContext";
-import { ObjectState, Transform } from "~/utils/modules";
+import { ObjectState } from "~/utils/modules";
 import Scene from "./Scene";
 import Camera from "./Camera";
 import Sprite from "./Sprite";

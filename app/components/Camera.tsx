@@ -1,3 +1,5 @@
+// app/components/Camera.tsx
+
 import { useEffect, useRef } from "react";
 import { ParentProvider, useParent } from "~/contexts/ParentContext";
 import * as PIXI from "pixi.js"

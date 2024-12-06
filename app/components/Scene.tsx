@@ -1,3 +1,5 @@
+// app/components/Scene.tsx
+
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import { ParentProvider } from "~/contexts/ParentContext";

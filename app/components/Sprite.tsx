@@ -1,3 +1,5 @@
+// app/components/Sprite.tsx
+
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 import { useParent } from "~/contexts/ParentContext";

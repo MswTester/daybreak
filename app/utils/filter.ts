@@ -1,3 +1,5 @@
+// app/utils/filter.ts
+
 import * as PIXIFilters from 'pixi-filters';
 import * as PIXI from 'pixi.js';
 

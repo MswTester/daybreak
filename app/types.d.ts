@@ -1,3 +1,5 @@
+// types.d.ts
+
 // global types
 
 type Vector2 = [number, number];
