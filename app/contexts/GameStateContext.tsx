@@ -14,11 +14,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     timeline: 0,
     judged: [],
     notelines: [],
-    judgement: {
-      id: 'judgement',
-      transform: new Transform(),
-      filters: {},
-    },
     sprites: [],
     texts: [],
     camera: {

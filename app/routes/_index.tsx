@@ -5,7 +5,7 @@ import { ScreenProvider } from "~/contexts/ScreenContext";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "VeatBreak" },
+    { title: "LoomBeat" },
     { name: "description", content: "Visualistic Note Rhythm Game" },
   ];
 };
@@ -50,11 +50,6 @@ const testLevel:Level = {
       transform:{position:[0, 0], rotation:0, scale:[0, 0], alpha:1, pivot:[.5, .5], tint:0xffffff},
     },
   ],
-  judgement: {
-    events:[],
-    filters:[],
-    transform:{position:[0, 0], rotation:0, scale:[0, 0], alpha:1, pivot:[.5, .5], tint:0xffffff},
-  },
   camera: {
     events:[],
     filters:[],

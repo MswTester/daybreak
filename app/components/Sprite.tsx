@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import { useParent } from "~/contexts/ParentContext";
 import { toFilter } from "~/utils/filter";
 import { Transform } from "~/utils/modules";
+import { usePixel } from "./Scene";
 
 interface SpriteProps {
     transform?: Transform;
@@ -12,13 +13,14 @@ interface SpriteProps {
 
 const Sprite = ({ transform = new Transform(), filters = {}, texture }:SpriteProps) => {
     const parent = useParent();
+    const pixel = usePixel();
     const spriteRef = useRef<PIXI.Sprite | null>(null);
 
     useEffect(() => {
         if (spriteRef.current) {
             spriteRef.current.destroy();
         }
-        const sprite = new PIXI.Sprite(PIXI.Texture.from(texture));
+        const sprite = new PIXI.Sprite(PIXI.Assets.get(texture));
         spriteRef.current = sprite;
         parent.addChild(sprite);
         return () => {
@@ -27,18 +29,18 @@ const Sprite = ({ transform = new Transform(), filters = {}, texture }:SpritePro
                 spriteRef.current.destroy();
             }
         };
-    }, []);
+    }, [parent]);
 
     useEffect(() => {
         if (spriteRef.current) {
-            spriteRef.current.position.set(transform.position[0], transform.position[1]);
-            spriteRef.current.setSize(transform.scale[0], transform.scale[1]);
+            spriteRef.current.position.set(transform.position[0] * pixel, transform.position[1] * pixel);
+            spriteRef.current.setSize(transform.scale[0] * pixel, transform.scale[1] * pixel);
             spriteRef.current.rotation = transform.rotation;
             spriteRef.current.alpha = transform.alpha;
-            spriteRef.current.pivot.set(transform.pivot[0], transform.pivot[1]);
+            spriteRef.current.anchor.set(transform.pivot[0], transform.pivot[1]);
             spriteRef.current.filters = Object.keys(filters).map((key:string) => toFilter(key, filters[key]));
         }
-    }, [transform, filters]);
+    }, [transform, filters, pixel]);
 
     useEffect(() => {
         if (spriteRef.current) {

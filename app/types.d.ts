@@ -95,13 +95,12 @@ interface LevelDisplay{
 interface Level extends LevelDisplay{
     backgroundColor: number; // background color of the level
     notelines: [Noteline, Noteline, Noteline, Noteline]; // notes in the level
-    judgement: Judgement; // judgement in the level
     sprites: Sprite[]; // sprites in the level
     texts: Text[]; // texts in the level
     camera: Object; // camera in the level
 }
 
-interface Event{
+interface GameEvent{
     type: string; // event type
     time: number; // event timing (ms)
     duration: number; // event duration (ms)
@@ -116,7 +115,7 @@ interface Event{
 interface Object{
     transform: Transform; // transform of the object
     filters: {[key:FilterName]:any}; // filters of the object
-    events: Event[]; // events in the object
+    events: GameEvent[]; // events in the object
 }
 
 interface Noteline extends Object{
@@ -127,7 +126,6 @@ interface Noteline extends Object{
 
 type Note = [number, number]; // [note timing (ms), note type (0-2)] 0: tap, 1: hold start, 2: hold end
 
-interface Judgement extends Object{};
 
 interface Sprite extends Object{
     texture: string; // texture of the sprite
@@ -173,6 +171,7 @@ interface SpriteState extends ObjectState{
 interface Judge{
     key: string; // key for the judge (e.g. "d", "f", "j", "k")
     time: number; // judge timing (ms)
+    state: number; // 0: keydown, 1: keyup
 }
 
 interface GameState{
@@ -180,7 +179,6 @@ interface GameState{
     timeline: number; // current timeline (ms)
     judged: Judge[]; // judged notes
     notelines: NotelineState[]; // notelines in the game
-    judgement: ObjectState; // judgements in the game
     sprites: SpriteState[]; // sprites in the game
     texts: TextState[]; // texts in the game
     camera: ObjectState; // camera in the game
