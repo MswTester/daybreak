@@ -26,8 +26,8 @@ class Transform implements Transform{
 class ObjectState implements ObjectState{
     id: string;
     transform: Transform;
-    filters: {[key: string]: any};
-    constructor(id: string, transform: Transform, filters: {[key: string]: any}){
+    filters: Filter[];
+    constructor(id: string, transform: Transform, filters: Filter[]){
         this.id = id;
         this.transform = transform;
         this.filters = filters;

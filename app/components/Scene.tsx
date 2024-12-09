@@ -44,6 +44,9 @@ const Scene = ({ children, width, height, background, pixelSize }:SceneProps) =>
                         divRef.current?.removeChild(app.canvas)
                     }
                 }
+                return () => {
+                    app.destroy();
+                }
             })
         })
     }, []);
@@ -55,10 +58,10 @@ const Scene = ({ children, width, height, background, pixelSize }:SceneProps) =>
     }, [background]);
 
     useEffect(() => {
-        if (appRef.current) {
+        if (appRef.current && initialized) {
             appRef.current.renderer.resize(width, height);
         }
-    }, [width, height]);
+    }, [width, height, initialized]);
 
     return (<PixelContext.Provider value={pixelSize || 64} >
         <ParentProvider container={appRef.current?.stage || new PIXI.Container()}>

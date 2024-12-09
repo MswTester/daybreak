@@ -7,15 +7,13 @@ import { toFilter } from "~/utils/filter";
 import { Transform } from "~/utils/modules";
 import { usePixel } from "./Scene";
 
-interface CameraProps{
+interface ContainerProps {
     transform?: Transform;
     filters?: Filter[];
     children: React.ReactNode;
-    screenWidth: number;
-    screenHeight: number;
 }
 
-const Camera = ({ children, transform = new Transform(), filters = [], screenWidth, screenHeight }:CameraProps) => {
+const Container = ({ children, transform = new Transform(), filters = [] }:ContainerProps) => {
     const parent = useParent();
     const pixel = usePixel();
     const containerRef = useRef<PIXI.Container>(new PIXI.Container());
@@ -25,7 +23,6 @@ const Camera = ({ children, transform = new Transform(), filters = [], screenWid
             containerRef.current.destroy();
         }
         const container = new PIXI.Container();
-        container.label = "Camera";
         containerRef.current = container;
         parent.addChild(container);
         return () => {
@@ -38,16 +35,11 @@ const Camera = ({ children, transform = new Transform(), filters = [], screenWid
 
     useEffect(() => {
         if(containerRef.current){
-            containerRef.current.position.set(screenWidth / 2, screenHeight / 2);
-        }
-    }, [screenWidth, screenHeight])
-
-    useEffect(() => {
-        if(containerRef.current){
-            containerRef.current.pivot.set(transform.position[0] * pixel, transform.position[1] * pixel);
+            containerRef.current.position.set(transform.position[0] * pixel, transform.position[1] * pixel);
             containerRef.current.scale.set(transform.scale[0], transform.scale[1]);
             containerRef.current.rotation = transform.rotation;
             containerRef.current.alpha = transform.alpha;
+            containerRef.current.pivot.set(transform.pivot[0] * pixel, transform.pivot[1] * pixel);
             containerRef.current.filters = filters.map((filter:Filter) => toFilter(filter.type, filter.data));
         }
     }, [transform, filters, pixel])
@@ -55,4 +47,4 @@ const Camera = ({ children, transform = new Transform(), filters = [], screenWid
     return <ParentProvider container={containerRef.current}>{children}</ParentProvider>
 }
 
-export default Camera;
+export default Container;

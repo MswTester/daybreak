@@ -116,7 +116,7 @@ interface GameEvent{
 
 interface Object{
     transform: Transform; // transform of the object
-    filters: {[key:FilterName]:any}; // filters of the object
+    filters: Filter[]; // filters of the object
     events: GameEvent[]; // events in the object
 }
 
@@ -140,10 +140,15 @@ interface Text extends Object{
 
 // game state types
 
+interface Filter{
+    type: FilterName; // filter type
+    data: any; // filter data
+}
+
 interface ObjectState{
     id: string; // id of the object
     transform: Transform; // transform of the object
-    filters: {[key:FilterName]:any}; // filters of the object
+    filters: Filter[]; // filters of the object
 }
 
 interface NotelineState extends ObjectState{

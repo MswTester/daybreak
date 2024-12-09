@@ -9,12 +9,12 @@ import { usePixel } from "./Scene";
 
 interface TextProps {
     transform?: Transform;
-    filters?: { [key: string]: any };
+    filters?: Filter[];
     text: string;
     style: PIXI.TextStyle;
 }
 
-const Text = ({ transform = new Transform(), filters = {}, text, style }:TextProps) => {
+const Text = ({ transform = new Transform(), filters = [], text, style }:TextProps) => {
     const parent = useParent();
     const pixel = usePixel();
     const textRef = useRef<PIXI.Text | null>(null);
@@ -40,7 +40,7 @@ const Text = ({ transform = new Transform(), filters = {}, text, style }:TextPro
             textRef.current.rotation = transform.rotation;
             textRef.current.alpha = transform.alpha;
             textRef.current.anchor.set(transform.pivot[0], transform.pivot[1]);
-            textRef.current.filters = Object.keys(filters).map((key:string) => toFilter(key, filters[key]));
+            textRef.current.filters = filters.map((filter:Filter) => toFilter(filter.type, filter.data));
         }
     }, [transform, filters, pixel]);
 

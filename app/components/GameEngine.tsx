@@ -94,7 +94,12 @@ const GameEngine = ({ timeline, level, autoplay = false, endCallback }:GameEngin
   return (
     <Scene background={gameState.backgroundColor} width={width} height={height} pixelSize={screenSize}>
       <Camera screenWidth={width} screenHeight={height}>
-        <Sprite filters={[]} texture="assets/note.png" />
+        <Sprite filters={[
+          {type: "GlowFilter", data: { distance: 5, outerStrength: 5, innerStrength: 0, color: 0xffffff, quality: 0.3, alpha: .3 }},
+          {type: "GlowFilter", data: { distance: 10, outerStrength: 3, innerStrength: 0, color: 0x0000ff, quality: 0.3, alpha: .5 }},
+          {type: "GlowFilter", data: { distance: 10, outerStrength: 0, innerStrength: 3, color: 0xff0000, quality: 0.2, alpha: .5 }},
+          {type: "BloomFilter", data: { value: 10, strengthX: 10, strengthY: 10 }},
+        ]} texture="assets/note.png" />
       </Camera>
     </Scene>
   );

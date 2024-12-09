@@ -9,11 +9,11 @@ import { usePixel } from "./Scene";
 
 interface SpriteProps {
     transform?: Transform;
-    filters?: { [key: string]: any };
+    filters?: Filter[];
     texture: string;
 }
 
-const Sprite = ({ transform = new Transform(), filters = {}, texture }:SpriteProps) => {
+const Sprite = ({ transform = new Transform(), filters = [], texture }:SpriteProps) => {
     const parent = useParent();
     const pixel = usePixel();
     const spriteRef = useRef<PIXI.Sprite | null>(null);
@@ -40,7 +40,7 @@ const Sprite = ({ transform = new Transform(), filters = {}, texture }:SpritePro
             spriteRef.current.rotation = transform.rotation;
             spriteRef.current.alpha = transform.alpha;
             spriteRef.current.anchor.set(transform.pivot[0], transform.pivot[1]);
-            spriteRef.current.filters = Object.keys(filters).map((key:string) => toFilter(key, filters[key]));
+            spriteRef.current.filters = filters.map((filter:Filter) => toFilter(filter.type, filter.data));
         }
     }, [transform, filters, pixel]);
 

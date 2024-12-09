@@ -48,16 +48,12 @@ const getEventedTransform = (transform:Transform, timeline:number, events:GameEv
     }, transform);
 };
 
-const getEventedFilters = (filters:{[key:string]:any}, timeline:number, events:GameEvent[]):{[key:string]:any} => {
-    return events.reduce((acc:{[key:string]:any}, event:GameEvent) => {
-        if (event.type === "bloomFilter"){
-            const start = event.data.start || filters.bloomFilter;
-            const end = event.data.end || filters.bloomFilter;
-            const blurX = start[0] + (end[0] - start[0]) * easing(calcProgress(timeline, event.time, event.duration), event.ease);
-            const blurY = start[1] + (end[1] - start[1]) * easing(calcProgress(timeline, event.time, event.duration), event.ease);
-            const quality = start[2] + (end[2] - start[2]) * easing(calcProgress(timeline, event.time, event.duration), event.ease);
-            acc.bloomFilter = [blurX, blurY, quality];
-        }
+const getEventedFilters = (filters:Filter[], timeline:number, events:GameEvent[]):Filter[] => {
+    return events.reduce((acc:Filter[], event:GameEvent) => {
+        const start = event.data.start;
+        const end = event.data.end;
+        const data = start.map((start:number, i:number) => start + (end[i] - start) * easing(calcProgress(timeline, event.time, event.duration), event.ease));
+        acc.push({type: event.type as FilterName, data});
         return acc;
     }, filters);
 };
@@ -67,7 +63,7 @@ const getEventedGameState = (prev:GameState, level:Level, timeline:number):GameS
     const notelines:NotelineState[] = level.notelines.map((noteline:Noteline, i) => {
         const id:string = `noteline-${i}`;
         const transform:Transform = getEventedTransform(noteline.transform, timeline, noteline.events);
-        const filters:{[key:string]:any} = getEventedFilters(noteline.filters, timeline, noteline.events);
+        const filters:Filter[] = getEventedFilters(noteline.filters, timeline, noteline.events);
         const bpm:number = noteline.bpm;
         const key:string = noteline.key;
         const notes:NoteState[] = noteline.notes.map((note:Note, j) => {
@@ -99,7 +95,7 @@ const getEventedGameState = (prev:GameState, level:Level, timeline:number):GameS
     const sprites:SpriteState[] = level.sprites.map((sprite, i) => {
         const id:string = `sprite-${i}`;
         const transform:Transform = getEventedTransform(sprite.transform, timeline, sprite.events);
-        const filters:{[key:string]:any} = getEventedFilters(sprite.filters, timeline, sprite.events);
+        const filters:Filter[] = getEventedFilters(sprite.filters, timeline, sprite.events);
         const texture:string = sprite.events.reduce((acc:string, event:GameEvent) => {
             if (event.type === "texture"){
                 return event.data.start || event.data.end;
@@ -116,7 +112,7 @@ const getEventedGameState = (prev:GameState, level:Level, timeline:number):GameS
     const texts:TextState[] = level.texts.map((text:Text, i) => {
         const id:string = `text-${i}`;
         const transform:Transform = getEventedTransform(text.transform, timeline, text.events);
-        const filters:{[key:string]:any} = getEventedFilters(text.filters, timeline, text.events);
+        const filters:Filter[] = getEventedFilters(text.filters, timeline, text.events);
         const style:PIXI.TextStyle = text.style;
         const textString:string = text.text;
         return {
