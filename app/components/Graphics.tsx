@@ -10,10 +10,10 @@ import { usePixel } from "./Scene";
 interface GraphicsProps {
     transform?: Transform;
     filters?: Filter[];
-    graphics: PIXI.Graphics;
+    draw: (g:PIXI.Graphics) => void;
 }
 
-const Graphics = ({ transform = new Transform(), filters = [], graphics }:GraphicsProps) => {
+const Graphics = ({ transform = new Transform(), filters = [], draw }:GraphicsProps) => {
     const parent = useParent();
     const pixel = usePixel();
     const graphicsRef = useRef<PIXI.Graphics | null>(null);
@@ -23,6 +23,7 @@ const Graphics = ({ transform = new Transform(), filters = [], graphics }:Graphi
             graphicsRef.current.destroy();
         }
         const graphics = new PIXI.Graphics();
+        draw(graphics);
         graphicsRef.current = graphics;
         parent.addChild(graphics);
         return () => {
@@ -36,9 +37,9 @@ const Graphics = ({ transform = new Transform(), filters = [], graphics }:Graphi
     useEffect(() => {
         if (graphicsRef.current) {
             graphicsRef.current.clear();
-            // draw graphics
+            draw(graphicsRef.current);
         }
-    }, [graphics, pixel]);
+    }, [pixel, draw]);
 
     useEffect(() => {
         if (graphicsRef.current) {
