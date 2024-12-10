@@ -21,7 +21,9 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     camera: {
       id: 'camera',
       transform: new Transform(),
-      filters: {},
+      filters: [],
+      blendMode: '',
+      mask: '',
     },
     combo: 0,
     score: 0,

@@ -2,16 +2,20 @@
 
 import { useEffect } from "react";
 import { useGameState } from "~/contexts/GameStateContext";
-import { useScreen } from "~/contexts/ScreenContext";
-import { ObjectState } from "~/utils/modules";
-import Scene from "./Scene";
-import Camera from "./Camera";
-import Sprite from "./Sprite";
+import Scene from "./pixijs/Scene";
+import Camera from "./pixijs/Camera";
+import Sprite from "./pixijs/Sprite";
+import Text from "./pixijs/Text";
+import Container from "./pixijs/Container";
+import getEventedGameState from "~/utils/eventedState";
 
 interface GameEngineProps {
   timeline: number;
   level: Level;
   autoplay?: boolean;
+  width?: number;
+  height?: number;
+  pixelSize?: number;
   endCallback?: (
     score:number,
     maxCombo:number,
@@ -25,58 +29,29 @@ interface GameEngineProps {
   ) => void;
 }
 
-const GameEngine = ({ timeline, level, autoplay = false, endCallback }:GameEngineProps) => {
+const GameEngine = ({ timeline, level, autoplay = false, width = 1200, height = 900, pixelSize, endCallback }:GameEngineProps) => {
   const { gameState, setGameState } = useGameState();
-  const { screenSize, width, height } = useScreen();
 
   useEffect(() => {
-    // level initialization
-    setGameState((prev:GameState) => {
-      return {
-        ...prev,
-        backgroundColor: level.backgroundColor,
-        timeline: 0,
-        judged: [],
-        notelines: level.notelines.map((noteline:Noteline, i) => ({
-          ...ObjectState.to(noteline, `noteline-${i}`),
-          notes: noteline.notes.map((note:Note, j) => ({
-            ...ObjectState.to(note, `note-${i}-${j}`),
-            time: note[0],
-            type: note[1],
-            hit: 0,
-            judgement: 0,
-          })),
-          key: noteline.key,
-          bpm: noteline.bpm,
-        })),
-        sprites: level.sprites.map((sprite, i) => ({
-          ...ObjectState.to(sprite, `sprite-${i}`),
-          texture: sprite.texture,
-        })),
-        texts: level.texts.map((text, i) => ({
-          ...ObjectState.to(text, `text-${i}`),
-          text: text.text,
-          style: Object.assign({}, text.style),
-        })),
-        camera: ObjectState.to(level.camera, 'camera'),
-        accuracy: 0,
-        combo: 0,
-        health: 100,
-        maxCombo: 0,
-        score: 0,
-      };
-    });
-  }, [level]);
-
-  useEffect(() => {
-    setGameState((prev:GameState) => ({
-      ...prev,
-      timeline,
-    }));
-  }, [timeline]);
+    setGameState((prev:GameState) => getEventedGameState(prev, level, timeline));
+  }, [level, timeline]);
 
   useEffect(() => {
     if(autoplay){
+      setGameState((prev:GameState) => {
+        return {
+          ...prev,
+          judged: prev.notelines.flatMap((noteline:NotelineState) => {
+            return noteline.notes.map((note:NoteState) => {
+              return {
+                key: noteline.key,
+                time: note.time,
+                state: 0,
+              }
+            });
+          }),
+        }
+      });
     } else {
       const keydown = (e:KeyboardEvent) => {
       }
@@ -92,14 +67,31 @@ const GameEngine = ({ timeline, level, autoplay = false, endCallback }:GameEngin
   }, [autoplay])
 
   return (
-    <Scene background={gameState.backgroundColor} width={width} height={height} pixelSize={screenSize}>
-      <Camera screenWidth={width} screenHeight={height}>
-        <Sprite filters={[
-          {type: "GlowFilter", data: { distance: 5, outerStrength: 5, innerStrength: 0, color: 0xffffff, quality: 0.3, alpha: .3 }},
-          {type: "GlowFilter", data: { distance: 10, outerStrength: 3, innerStrength: 0, color: 0x0000ff, quality: 0.3, alpha: .5 }},
-          {type: "GlowFilter", data: { distance: 10, outerStrength: 0, innerStrength: 3, color: 0xff0000, quality: 0.2, alpha: .5 }},
-          {type: "BloomFilter", data: { value: 10, strengthX: 10, strengthY: 10 }},
-        ]} texture="assets/note.png" />
+    <Scene background={gameState.backgroundColor} width={width} height={height} pixelSize={pixelSize} using={[
+      "assets/white.png",
+      "assets/black.png",
+      "assets/judge.png",
+      "assets/note.png",
+      "logo.png",
+    ]}>
+      <Camera screenWidth={width} screenHeight={height} {...gameState.camera.transform} filters={gameState.camera.filters} >
+        {gameState.notelines.map((noteline:NotelineState, i:number) => (
+          <Container key={noteline.id} {...noteline.transform}>
+            <Sprite texture="assets/judge.png" scale={[.2, .8]} />
+            <Sprite texture="assets/white.png" scale={[.2, .8]} id={`j${i}`} />
+            <Sprite filters={[
+              {type: "GlowFilter", data: { distance: 5, outerStrength: 3, innerStrength: 0, color: 0xffffff, quality: .2, alpha: .3 }},
+              {type: "BloomFilter", data: { value: 8, strengthX: 10, strengthY: 10 }},
+            ]} texture="assets/note.png" scale={[.2, .2]} alpha={.9} mask={`j${i}`} position={[0, .25]} />
+            {noteline.notes.map((note:NoteState) => (
+              <Sprite filters={[
+                {type: "GlowFilter", data: { distance: 5, outerStrength: 3, innerStrength: 0, color: 0xffffff, quality: .2, alpha: .3 }},
+                {type: "BloomFilter", data: { value: 8, strengthX: 10, strengthY: 10 }},
+              ]} texture="assets/note.png" scale={[.2, .2]} alpha={.9} mask={`j${i}`} position={[0, 0]} />
+            ))}
+          </Container>
+        ))}
+        <Text text="Perfect!" position={[0, -.2]} style={{fontSize: .07, align: "center", fill: 0x00ff00, stroke:0x000000, fontWeight: "bold"}} />
       </Camera>
     </Scene>
   );

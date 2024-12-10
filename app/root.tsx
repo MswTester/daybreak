@@ -9,6 +9,7 @@ import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
 import "./global.css"
+import { ScreenProvider } from "./contexts/ScreenContext";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,7 +34,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <ScreenProvider>
+          {children}
+        </ScreenProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

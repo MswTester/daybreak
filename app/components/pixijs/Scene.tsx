@@ -1,4 +1,4 @@
-// app/components/Scene.tsx
+// app/components/pixijs/Scene.tsx
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
@@ -10,6 +10,7 @@ interface SceneProps {
     height: number;
     background: number;
     pixelSize?: number;
+    using?: string[];
 }
 
 const PixelContext = createContext<number|null>(null);
@@ -22,13 +23,13 @@ export const usePixel = () => {
     return context;
 };
 
-const Scene = ({ children, width, height, background, pixelSize }:SceneProps) => {
+const Scene = ({ children, width, height, background, pixelSize, using = [] }:SceneProps) => {
     const divRef = useRef<HTMLDivElement>(null);
     const appRef = useRef<PIXI.Application | null>(null);
     const [initialized, setInitialized] = useState<boolean>(false);
 
     useEffect(() => {
-        PIXI.Assets.load(["assets/note.png"]).then(() => {
+        PIXI.Assets.load(using).then(() => {
             const app = new PIXI.Application();
             app.init({
                 width, height,
@@ -37,7 +38,6 @@ const Scene = ({ children, width, height, background, pixelSize }:SceneProps) =>
             .then(value => {
                 setInitialized(true);
                 if (divRef.current) {
-                    console.log(app)
                     divRef.current.appendChild(app.canvas);
                     appRef.current = app;
                     return () => {
@@ -58,7 +58,7 @@ const Scene = ({ children, width, height, background, pixelSize }:SceneProps) =>
     }, [background]);
 
     useEffect(() => {
-        if (appRef.current && initialized) {
+        if (appRef.current) {
             appRef.current.renderer.resize(width, height);
         }
     }, [width, height, initialized]);

@@ -92,14 +92,24 @@ interface LevelDisplay{
     artist: string; // artist name
     difficulty: number; // difficulty level
     bpm: string; // bpm for level display (e.g. 120-150)
+    chart: string; // chart maker
+    thumbnail: string; // thumbnail image
 }
 
 interface Level extends LevelDisplay{
     backgroundColor: number; // background color of the level
-    notelines: [Noteline, Noteline, Noteline, Noteline]; // notes in the level
-    sprites: Sprite[]; // sprites in the level
-    texts: Text[]; // texts in the level
+    notelines: S_Noteline[]; // notes in the level
+    sprites: S_Sprite[]; // sprites in the level
+    texts: S_Text[]; // texts in the level
+    blocks: S_Block[]; // blocks in the level
     camera: Object; // camera in the level
+}
+
+interface S_Block{
+    offset: number; // block offset (ms)
+    split: number; // block split (beats)
+    length: number; // block length (beats) 마디
+    bpm: number; // block bpm
 }
 
 interface GameEvent{
@@ -112,30 +122,32 @@ interface GameEvent{
 // e.g. { type: "position", time: 1200, duration: 850, ease: "easeInOutQuad", data: { start: [0, 0], end: [.3, .8] } }
 // e.g. { type: "texture", time: 1200, duration: 0, ease: "easeInOutQuad", data: { end: "assets/sprites/1.png" } }
 // e.g. { type: "bpm", time: 250, duration: 300, ease: "easeInOutQuad", data: { start: 120, end: 170 } }
-// e.g. { type: "bloomFilter", time: 1700, duration: 350, ease: "easeInOutQuad", data: { start: [0, 0, 0], end: [6, 6, 2] } }
+// e.g. { type: "bloomFilter", time: 1700, duration: 350, ease: "easeInOutQuad", data: { start: [0, 0, 0], end: [6, 6, 2], index: 0 } }
 
-interface Object{
+interface S_Object{
     transform: Transform; // transform of the object
     filters: Filter[]; // filters of the object
+    blendMode: PIXI.BLEND_MODES | ""; // blend mode of the object
+    mask: string; // object id for masking
     events: GameEvent[]; // events in the object
 }
 
-interface Noteline extends Object{
-    notes:Note[]; // notes in the noteline
+interface S_Noteline extends S_Object{
+    notes:S_Note[]; // notes in the noteline
     key:string; // key for the noteline (e.g. "d", "f", "j", "k")
     bpm:number; // bpm for the noteline
 }
 
-type Note = [number, number]; // [note timing (ms), note type (0-2)] 0: tap, 1: hold start, 2: hold end
+type S_Note = [number, number]; // [note timing (ms), note type (0-2)] 0: tap, 1: hold start, 2: hold end
 
 
-interface Sprite extends Object{
+interface S_Sprite extends S_Object{
     texture: string; // texture of the sprite
 }
 
-interface Text extends Object{
+interface S_Text extends S_Object{
     text: string; // text of the text
-    style: PIXI.TextStyle; // style of the text
+    style: PIXI.TextStyleOptions; // style of the text
 }
 
 // game state types
@@ -149,6 +161,8 @@ interface ObjectState{
     id: string; // id of the object
     transform: Transform; // transform of the object
     filters: Filter[]; // filters of the object
+    blendMode: PIXI.BLEND_MODES | ""; // blend mode of the object
+    mask: string; // object id for masking
 }
 
 interface NotelineState extends ObjectState{
@@ -163,12 +177,12 @@ interface NoteState {
     type: number; // note type (0-2) 0: tap, 1: hold start, 2: hold end
     hit: number; // hit timing (ms)
     judgement: number; // judgment text 0: not judged, 1: perfect, 2: great, 3: good, 4: bad, 5: miss
-    transform: Transform; // 노트의 트랜스폼 상태
+    percent: number; // percent of the note hit
 }
 
 interface TextState extends ObjectState{
     text: string; // text of the text
-    style: PIXI.TextStyle; // style of the text
+    style: PIXI.TextStyleOptions; // style of the text
 }
 
 interface SpriteState extends ObjectState{
@@ -194,4 +208,16 @@ interface GameState{
     health: number; // current health
     maxCombo: number; // max combo
     accuracy: number; // current accuracy
+}
+
+interface ObjectProps{
+    id?: string;
+    position?: Vector2;
+    rotation?: number;
+    scale?: Vector2;
+    alpha?: number;
+    pivot?: Vector2;
+    filters?: Filter[];
+    blendMode?: PIXI.BLEND_MODES;
+    mask?: string; // object id for masking
 }
